@@ -1,0 +1,2 @@
+1. Beneath the great gleaming halls of the Aelfin sprawled the houses of color belonging foremost and chiefly to the Solothi. There, they set about in their arts and labors in such fashions as to invite comparisons to Greater Works. 
+2. Though they were no Greater Works, they held about them a quality and

@@ -1,3 +1,2434 @@
-@use "./variables.scss" as *;
+@use "./base.scss";
 
-// put your custom CSS here!
+/* =============================================================================
+   INHERITOR — custom.scss
+   Built from the "Inheritor Site" design against Quartz 5's real emitted DOM
+   (verified from public/index.html and public/inheritor's-guide/tests.html).
+
+   Quartz's own CSS sits in @layer quartz-base, so everything here wins as
+   long as the selector matches. No !important needed anywhere.
+   ============================================================================= */
+
+
+/* --- Tokens --------------------------------------------------------------- */
+
+:root {
+  --inh-blood:      #a65d5d;
+  --inh-blood-lit:  #c07070;
+  --inh-bronze:     #a67c52;
+  --inh-bronze-lit: #c1935f;
+  --inh-gold:       #8a8455;
+  --inh-gold-lit:   #a39c66;
+  --inh-verdigris:  #5d7a5d;
+  --inh-copper:     #5a7a7a;
+  --inh-copper-lit: #7aa5a5;
+  --inh-violet:     #6a6a8a;
+  --inh-amber:      #c9803f;
+  --inh-bone:       #fff2de;
+  --inh-ash:        #9a9590;
+  --inh-teal:       #6aadad;
+  --inh-teal-hover: #8acaca;
+
+  --inh-bg:         #171614;
+  --inh-bg-nav:     #141311;
+  --inh-bg-raised:  #1c1a17;
+  --inh-bg-block:   #1a1815;
+  --inh-bg-sunken:  #100f0e;
+  --inh-bg-hover:   #211f1b;
+  --inh-bg-input:   #232019;
+
+  --inh-line:       #2b2823;
+  --inh-line-soft:  #23211d;
+  --inh-line-hard:  #3a3630;
+  --inh-line-nav:   #26241f;
+  --inh-line-btn:   #37332d;
+  --inh-line-drw:   #32302a;
+
+  --inh-text:       #ded9d0;
+  --inh-text-warm:  #d8c9b4;
+  --inh-text-bright:#e8e2d8;
+  --inh-text-dim:   #b8b3aa;
+  --inh-text-soft:  #a8a29a;
+  --inh-muted:      #8f8a82;
+  --inh-quiet:      #6f6a62;
+  --inh-faint:      #5f5b55;
+  --inh-fainter:    #46423d;
+  --inh-ghost:      #56514b;
+
+  --inh-serif:      'Alegreya', Georgia, serif;
+  --inh-caps:       'Alegreya SC', Georgia, serif;
+  --inh-display:    'IM Fell English SC', Georgia, serif;
+  --inh-mono:       ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --inh-measure:    44rem;
+  --inh-texture:    url('/static/texture.webp');
+}
+
+
+/* --- Base ----------------------------------------------------------------- */
+
+html,
+body {
+  background: var(--inh-bg);
+  color: var(--inh-text);
+  font-family: var(--inh-serif);
+}
+
+/* The texture is not tileable — it has a bright corner and a denser bottom
+   half — so it covers rather than repeats. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.055;
+  mix-blend-mode: screen;
+  background-image: var(--inh-texture);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--inh-mono);
+}
+
+::selection {
+  background: rgba(166, 93, 93, 0.35);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 20px;
+  background-color: var(--inh-line-hard);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #4d4740;
+}
+
+@keyframes inh-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.center {
+  animation: inh-fade 0.4s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .center { animation: none; }
+}
+
+
+/* --- Layout --------------------------------------------------------------
+   Quartz centres the page in a 1500px box with a 320/auto/320 grid, and pads
+   every sidebar 6rem 2rem 2rem. The design is edge-to-edge with a 272px nav.
+   These are the rules that were missing before. */
+
+.page {
+  max-width: none;
+  margin: 0;
+}
+
+.page > #quartz-body {
+  grid-template-columns: 272px minmax(0, 1fr) 260px;
+  gap: 0;
+}
+
+.page > #quartz-body .sidebar {
+  gap: 0;
+  height: 100vh;
+  padding: 26px 0 40px;
+  box-sizing: border-box;
+}
+
+.page > #quartz-body .sidebar.left,
+.page > #quartz-body .sidebar.left:has(.explorer) {
+  padding: 26px 0 40px;
+  margin: 0;
+  background: var(--inh-bg-nav);
+  border-right: 1px solid var(--inh-line-nav);
+  overflow-y: auto;
+}
+
+.page > #quartz-body .sidebar.right {
+  padding: 56px 24px 40px 12px;
+  gap: 28px;
+}
+
+.page > #quartz-body .page-header,
+.page > #quartz-body .page-footer {
+  margin: 0;
+}
+
+.center > .page-header {
+  width: 100%;
+  max-width: var(--inh-measure);
+  margin: 0 auto;
+  padding: 56px 40px 0;
+  box-sizing: border-box;
+}
+
+.center article {
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 120px;
+  box-sizing: border-box;
+}
+
+.center > hr {
+  display: none;
+}
+
+/* Home: no right column, header becomes the hero container */
+body[data-slug='index'] .page > #quartz-body {
+  grid-template-columns: 272px minmax(0, 1fr) 0;
+}
+
+body[data-slug='index'] .sidebar.right,
+body[data-slug='index'] .breadcrumb-container,
+body[data-slug='index'] .article-title,
+body[data-slug='index'] .meta,
+body[data-slug='index'] .content-meta {
+  display: none;
+}
+
+body[data-slug='index'] .center > .page-header {
+  max-width: none;
+  padding: 0;
+}
+
+body[data-slug='index'] .center article {
+  padding-top: 40px;
+}
+
+
+/* --- Typography ----------------------------------------------------------- */
+
+/* Kicker above the title. Rendered by the breadcrumbs plugin as
+   nav.breadcrumb-container > div.breadcrumb-element > a + p("❯"). */
+.breadcrumb-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 6px;
+  margin: 0;
+  font-family: var(--inh-caps);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--inh-quiet);
+}
+
+.breadcrumb-element {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.breadcrumb-element a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+}
+
+.breadcrumb-element a:hover {
+  color: var(--inh-text-dim);
+}
+
+.breadcrumb-element p {
+  margin: 0;
+  font-size: 9px;
+  color: var(--inh-fainter);
+}
+
+/* The last crumb is the current page; the h1 says that already */
+.breadcrumb-element:last-child {
+  display: none;
+}
+
+/* The hand-written <sup>Section / [[Page]]</sup> line at the top of many
+   notes duplicates the breadcrumb. Hidden here; delete at leisure. */
+.markdown-rendered > p:first-child:has(> sup:only-child) {
+  display: none;
+}
+
+.markdown-rendered > p:first-child:has(> sup:only-child) + * {
+  margin-top: 0;
+}
+
+/* Byline row. The design has none. */
+.page-header .meta,
+.content-meta {
+  display: none;
+}
+
+.page-header h1.article-title,
+.markdown-rendered h1 {
+  margin: 10px 0 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--inh-line);
+  font-family: var(--inh-display);
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: 0.015em;
+  line-height: 1.12;
+  color: var(--inh-blood);
+  text-wrap: balance;
+}
+
+.markdown-rendered h2 {
+  margin: 48px 0 0;
+  font-family: var(--inh-caps);
+  font-size: 29px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  color: var(--inh-bronze);
+  text-wrap: balance;
+}
+
+.markdown-rendered h3 {
+  margin: 38px 0 0;
+  font-family: var(--inh-caps);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--inh-text-bright);
+}
+
+.markdown-rendered h4 {
+  margin: 30px 0 0;
+  font-family: var(--inh-caps);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--inh-muted);
+}
+
+.markdown-rendered h5 {
+  margin: 26px 0 0;
+  font-family: var(--inh-caps);
+  font-size: 17px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--inh-text-dim);
+}
+
+/* Run-in head */
+.markdown-rendered h6 {
+  display: inline;
+  margin: 0 0.5em 0 0;
+  font-size: 21px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--inh-muted);
+}
+
+.markdown-rendered h6 + p {
+  display: inline;
+}
+
+.markdown-rendered h1 > a.internal,
+.markdown-rendered h2 > a.internal,
+.markdown-rendered h3 > a.internal,
+.markdown-rendered h4 > a.internal {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --- Vertical rhythm ------------------------------------------------------
+   Top margins, contextual to what precedes. This is the design's spacing
+   model; it reads tighter under headings and looser between paragraphs. */
+
+.markdown-rendered p {
+  margin: 0;
+  font-size: 21px;
+  line-height: 1.62;
+  color: var(--inh-text);
+  text-wrap: pretty;
+}
+
+.markdown-rendered > * + *          { margin-top: 22px; }
+.markdown-rendered h1 + p           { margin-top: 28px; }
+.markdown-rendered h2 + p           { margin-top: 12px; }
+.markdown-rendered h3 + p           { margin-top: 10px; }
+.markdown-rendered h4 + p,
+.markdown-rendered h5 + p           { margin-top: 10px; }
+.markdown-rendered p + p            { margin-top: 16px; }
+.markdown-rendered > *:first-child  { margin-top: 0; }
+
+.markdown-rendered strong,
+.markdown-rendered b {
+  font-weight: 700;
+  color: var(--inh-bone);
+}
+
+.markdown-rendered em,
+.markdown-rendered i {
+  font-weight: 700;
+  color: var(--inh-ash);
+}
+
+.markdown-rendered ul,
+.markdown-rendered ol {
+  padding-left: 1.4em;
+  font-size: 21px;
+  line-height: 1.62;
+}
+
+.markdown-rendered li + li {
+  margin-top: 6px;
+}
+
+.markdown-rendered li::marker {
+  color: var(--inh-faint);
+}
+
+.markdown-rendered blockquote {
+  padding: 0 0 0 1.2em;
+  border-left: 1px solid var(--inh-line-hard);
+  color: var(--inh-text-dim);
+}
+
+.markdown-rendered hr {
+  margin: 44px auto;
+  width: 5rem;
+  border: none;
+  border-top: 1px solid var(--inh-line-hard);
+}
+
+.markdown-rendered code {
+  font-size: 15px;
+  padding: 0 5px;
+  color: var(--inh-text-dim);
+  background: #262420;
+  border: 1px solid var(--inh-line-btn);
+  border-radius: 2px;
+}
+
+/* Proper nouns in all-small-caps */
+.markdown-rendered .caps,
+.markdown-rendered [style*='all-small-caps'] {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--inh-bone);
+}
+
+/* Advantage / disadvantage pills */
+.markdown-rendered .adv,
+.markdown-rendered .dis {
+  font-family: var(--inh-mono);
+  font-size: 15px;
+  padding: 0 5px;
+  border-radius: 2px;
+}
+
+.markdown-rendered .adv {
+  color: var(--inh-verdigris);
+  background: rgba(93, 122, 93, 0.12);
+  border: 1px solid rgba(93, 122, 93, 0.3);
+}
+
+.markdown-rendered .dis {
+  color: var(--inh-blood);
+  background: rgba(166, 93, 93, 0.12);
+  border: 1px solid rgba(166, 93, 93, 0.3);
+}
+
+.dried-blood      { color: var(--inh-blood); }
+.tarnished-bronze { color: var(--inh-bronze); }
+.aged-gold        { color: var(--inh-gold); }
+.verdigris        { color: var(--inh-verdigris); }
+.weathered-copper { color: var(--inh-copper); }
+.faded-violet     { color: var(--inh-violet); }
+.bone-parchment   { color: var(--inh-bone); }
+.ash-gray         { color: var(--inh-ash); }
+
+
+/* --- Links ---------------------------------------------------------------- */
+
+.center a,
+.markdown-rendered a {
+  color: var(--inh-teal);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: rgba(106, 173, 173, 0.4);
+  text-underline-offset: 2px;
+  background-color: transparent;
+}
+
+.center a:hover,
+.markdown-rendered a:hover {
+  color: var(--inh-teal-hover);
+  text-decoration-color: var(--inh-teal-hover);
+}
+
+.markdown-rendered a.external .external-icon {
+  display: none;
+}
+
+.markdown-rendered a.external::after {
+  content: '↗';
+  margin-left: 0.2em;
+  font-size: 0.7em;
+  vertical-align: 0.35em;
+  color: var(--inh-fainter);
+}
+
+
+/* --- Tables --------------------------------------------------------------- */
+/* Border and radius live on the wrapper, so the corners clip cleanly and the
+   header row's background doesn't square them off. */
+
+.markdown-rendered .table-container {
+  border: 1px solid var(--inh-line);
+  border-radius: 2px;
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.markdown-rendered table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  border: none;
+  font-size: 16px;
+  font-family: var(--inh-serif);
+  table-layout: auto;
+}
+
+.markdown-rendered thead tr {
+  background: var(--inh-bg-raised);
+}
+
+.markdown-rendered th {
+  padding: 9px 14px;
+  text-align: left;
+  font-family: var(--inh-caps);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--inh-muted);
+  border-bottom: 1px solid var(--inh-line);
+  white-space: nowrap;
+}
+
+.markdown-rendered td {
+  padding: 9px 14px;
+  vertical-align: middle;
+  line-height: 1.4;
+  text-wrap: balance;
+  color: var(--inh-text);
+  border-bottom: 1px solid var(--inh-line-soft);
+}
+
+/* First column of a roll table is the die result: bronze, monospace. */
+.markdown-rendered td:first-child {
+  font-family: var(--inh-text);
+  font-size: 13px;
+  color: var(--inh-bronze);
+  white-space: nowrap;
+}
+
+.markdown-rendered tbody tr:hover {
+  background: rgba(166, 93, 93, 0.055);
+}
+
+.markdown-rendered tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Opt-out for tables whose first column is a name, not a die result:
+   wrap in <div class="inh-table-named">. */
+.inh-table-named td:first-child {
+  font-family: var(--inh-serif);
+  font-size: 16px;
+  color: var(--inh-bone);
+  font-weight: 500;
+}
+
+
+/* --- Callouts ------------------------------------------------------------- */
+
+.markdown-rendered .callout {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--inh-line);
+  border-radius: 2px;
+  mix-blend-mode: normal;
+}
+
+.markdown-rendered .callout-title {
+  padding: 0;
+  font-family: var(--inh-caps);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--inh-muted);
+  background: none;
+}
+
+.markdown-rendered .callout-content {
+  margin-top: 5px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--inh-text-dim);
+}
+
+.markdown-rendered .callout-content p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--inh-text-dim);
+}
+
+.markdown-rendered .callout-content p + p {
+  margin-top: 10px;
+}
+
+.markdown-rendered .callout-icon,
+.markdown-rendered .fold-callout-icon {
+  display: none;
+}
+
+/* The title text is wrapped in its own <p>, which arrives with margins */
+.markdown-rendered .callout-title-inner p {
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  line-height: 1.3;
+}
+
+.markdown-rendered .callout-title {
+  display: flex;
+  align-items: baseline;
+}
+
+/* Rule — mechanical statements */
+.markdown-rendered .callout[data-callout='rule'],
+.markdown-rendered .callout[data-callout='important'],
+.markdown-rendered .callout[data-callout='info'],
+.markdown-rendered .callout[data-callout='question'] {
+  background: rgba(90, 122, 122, 0.07);
+  border-color: rgba(90, 122, 122, 0.28);
+  border-left: 2px solid var(--inh-copper);
+}
+
+.markdown-rendered .callout[data-callout='rule'] .callout-title,
+.markdown-rendered .callout[data-callout='important'] .callout-title,
+.markdown-rendered .callout[data-callout='info'] .callout-title,
+.markdown-rendered .callout[data-callout='question'] .callout-title {
+  color: var(--inh-copper-lit);
+}
+
+/* Warden — guidance for whoever runs the game */
+.markdown-rendered .callout[data-callout='warden'],
+.markdown-rendered .callout[data-callout='tip'],
+.markdown-rendered .callout[data-callout='note'] {
+  background: rgba(138, 132, 85, 0.06);
+  border-color: rgba(138, 132, 85, 0.26);
+  border-left: 2px solid var(--inh-gold);
+}
+
+.markdown-rendered .callout[data-callout='warden'] .callout-title,
+.markdown-rendered .callout[data-callout='tip'] .callout-title,
+.markdown-rendered .callout[data-callout='note'] .callout-title {
+  color: var(--inh-gold-lit);
+}
+
+/* Success — completion markers */
+.markdown-rendered .callout[data-callout='success'],
+.markdown-rendered .callout[data-callout='check'],
+.markdown-rendered .callout[data-callout='done'] {
+  background: rgba(93, 122, 93, 0.07);
+  border-color: rgba(93, 122, 93, 0.28);
+  border-left: 2px solid var(--inh-verdigris);
+}
+
+.markdown-rendered .callout[data-callout='success'] .callout-title,
+.markdown-rendered .callout[data-callout='check'] .callout-title,
+.markdown-rendered .callout[data-callout='done'] .callout-title {
+  color: #7a9e6f;
+}
+
+/* Example — play at the table */
+.markdown-rendered .callout[data-callout='example'],
+.markdown-rendered .callout[data-callout='quote'] {
+  background: rgba(106, 106, 138, 0.07);
+  border-color: rgba(106, 106, 138, 0.26);
+  border-left: 2px solid var(--inh-violet);
+  font-style: italic;
+}
+
+.markdown-rendered .callout[data-callout='example'] .callout-title,
+.markdown-rendered .callout[data-callout='quote'] .callout-title {
+  color: #8b8bab;
+  font-style: normal;
+}
+
+/* Danger */
+.markdown-rendered .callout[data-callout='warning'],
+.markdown-rendered .callout[data-callout='danger'],
+.markdown-rendered .callout[data-callout='caution'] {
+  background: rgba(166, 93, 93, 0.07);
+  border-color: rgba(166, 93, 93, 0.28);
+  border-left: 2px solid var(--inh-blood);
+}
+
+.markdown-rendered .callout[data-callout='warning'] .callout-title,
+.markdown-rendered .callout[data-callout='danger'] .callout-title,
+.markdown-rendered .callout[data-callout='caution'] .callout-title {
+  color: var(--inh-blood-lit);
+}
+
+
+/* --- Statblock ------------------------------------------------------------ */
+
+.markdown-rendered .callout[data-callout='statblock'] {
+  display: block;
+  padding: 20px 22px;
+  background: var(--inh-bg-block);
+  border: 1px solid var(--inh-line);
+  border-top: 3px double var(--inh-blood);
+  border-left: 1px solid var(--inh-line);
+  border-radius: 2px;
+}
+
+.markdown-rendered .callout[data-callout='statblock'] .callout-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--inh-amber);
+}
+
+.markdown-rendered .callout[data-callout='statblock'] .callout-content {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--inh-line);
+}
+
+/* Subtitle — first italic line inside the block */
+.inh-statblock-sub {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--inh-quiet);
+}
+
+/* Stat grid — see COMPONENTS.md */
+.inh-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+  gap: 10px;
+}
+
+.inh-stat-label {
+  font-family: var(--inh-caps);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--inh-quiet);
+}
+
+.inh-stat-value {
+  font-family: var(--inh-text);
+  font-size: 17px;
+  color: var(--inh-text-bright);
+}
+
+
+/* --- Sidenotes ------------------------------------------------------------ */
+/* Calibrated for Quartz's grid with the right sidebar present. If you drop the
+   right column on content pages, lower the breakpoint to ~1400px. */
+
+.markdown-rendered .callout[data-callout='side'] {
+  display: block;
+  float: right;
+  clear: right;
+  width: 190px;
+  margin: 0.3em -222px 1em 1.6em;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.markdown-rendered .callout[data-callout='side'] .callout-title {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--inh-violet);
+}
+
+.markdown-rendered .callout[data-callout='side'] .callout-content,
+.markdown-rendered .callout[data-callout='side'] .callout-content p {
+  margin-top: 4px;
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--inh-muted);
+}
+
+@media screen and (max-width: 1600px) {
+  .markdown-rendered .callout[data-callout='side'] {
+    float: none;
+    width: auto;
+    margin: 0;
+    padding: 15px 18px;
+    border-left: 2px solid var(--inh-violet);
+    background: rgba(106, 106, 138, 0.05);
+    border-radius: 2px;
+  }
+}
+
+
+/* --- Section divider ------------------------------------------------------ */
+/* A label followed by a hairline that fades out. Used for "Where to begin". */
+
+.inh-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 44px;
+}
+
+.inh-divider > span:first-child {
+  font-family: var(--inh-caps);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--inh-quiet);
+}
+
+.inh-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--inh-line), transparent);
+}
+
+
+/* --- Attribute cards ------------------------------------------------------ */
+
+.inh-attrs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.inh-attr {
+  padding: 16px;
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line);
+  border-top: 2px solid var(--inh-violet);
+  border-radius: 2px;
+}
+
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li:nth-last-child(1) { border-top-color: var(--inh-blood); }
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li:nth-last-child(2) { border-top-color: var(--inh-bronze); }
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li:nth-last-child(3) { border-top-color: var(--inh-gold); }
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li:nth-last-child(4) { border-top-color: var(--inh-verdigris); }
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li:nth-last-child(5) { border-top-color: var(--inh-copper); }
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li:nth-last-child(6) { border-top-color: var(--inh-violet); }
+
+.inh-attr-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.inh-attr-name {
+  font-family: var(--inh-caps);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--inh-text-warm);
+}
+
+.inh-attr-abbr {
+  font-family: var(--inh-mono);
+  font-size: 11px;
+  color: var(--inh-quiet);
+}
+
+.inh-attr-desc {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--inh-muted);
+}
+
+
+/* --- Difficulty pills ----------------------------------------------------- */
+
+.inh-tiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.inh-tier {
+  padding: 14px 16px;
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line);
+  border-radius: 2px;
+}
+
+.inh-tier-label {
+  font-family: var(--inh-caps);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--inh-verdigris);
+}
+
+.inh-tiers > .inh-tier:nth-child(2) .inh-tier-label { color: var(--inh-bronze); }
+.inh-tiers > .inh-tier:nth-child(3) .inh-tier-label { color: var(--inh-blood); }
+
+.inh-tier-value {
+  margin-top: 4px;
+  font-family: var(--inh-mono);
+  font-size: 24px;
+  color: var(--inh-text-bright);
+}
+
+
+/* --- [!legend] → cards (attrs layout, no colour coding) ------------------- */
+
+.markdown-rendered .callout[data-callout='legend'] .callout-content > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.markdown-rendered .callout[data-callout='legend'] .callout-content > ul > li {
+  position: relative;
+  display: block;
+  padding: 16px;
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line);
+  border-top: 2px solid var(--inh-line-hard);
+  border-radius: 2px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--inh-muted);
+}
+
+.markdown-rendered .callout[data-callout='legend'] .callout-content > ul > li > strong {
+  display: block;
+  margin-bottom: 6px;
+  padding-right: 52px;
+  font-family: var(--inh-caps);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--inh-text-warm);
+}
+
+.markdown-rendered .callout[data-callout='legend'] .callout-content > ul > li > code {
+  position: absolute;
+  top: 17px;
+  right: 16px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--inh-mono);
+  font-size: 11px;
+  color: var(--inh-quiet);
+}
+
+
+/* --- Feature list --------------------------------------------------------- */
+/* Hairlines come from the 1px gap over a coloured background — no borders to
+   double up at the seams. */
+
+.inh-features {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--inh-line);
+  border: 1px solid var(--inh-line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.inh-feature {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: 16px;
+  padding: 12px 14px;
+  background: var(--inh-bg-block);
+}
+
+.inh-feature-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--inh-bone);
+}
+
+.inh-feature-type {
+  margin-top: 2px;
+  font-family: var(--inh-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--inh-quiet);
+}
+
+.inh-feature-text {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--inh-text-dim);
+}
+
+@media screen and (max-width: 700px) {
+  .inh-feature {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+
+/* --- Page meta footer ----------------------------------------------------- */
+
+.inh-meta {
+  margin-top: 56px;
+  padding-top: 22px;
+  border-top: 1px solid var(--inh-line-nav);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--inh-faint);
+}
+
+
+/* --- Home ----------------------------------------------------------------
+   The hero and cards are rendered by components (InheritorHome.tsx), so
+   index.md holds only prose. Hero lives inside .page-header. */
+
+.inh-hero {
+  position: relative;
+  margin: 0;
+  padding: 96px 40px 60px;
+  text-align: center;
+  border-bottom: 1px solid var(--inh-line-nav);
+  overflow: hidden;
+}
+
+.inh-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  mix-blend-mode: screen;
+  background-image: var(--inh-texture);
+  background-size: cover;
+  background-position: center 30%;
+}
+
+.inh-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 100% at 50% 0%, rgba(166, 93, 93, 0.13), transparent 70%);
+}
+
+.inh-hero > * {
+  position: relative;
+}
+
+.inh-hero-eyebrow {
+  font-family: var(--inh-caps);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--inh-quiet);
+}
+
+.inh-hero-title > a[role='anchor'] {
+  display: none;
+}
+
+.inh-hero-title {
+  font-family: var(--inh-display);
+  font-size: clamp(56px, 9vw, 118px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.02;
+  color: var(--inh-blood);
+  text-shadow: 0 0 60px rgba(166, 93, 93, 0.22);
+  border: none;
+  padding: 0;
+}
+
+.inh-hero-rule {
+  margin: 22px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  max-width: 460px;
+  font-family: var(--inh-caps);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--inh-bronze);
+}
+
+.inh-hero-rule::before,
+.inh-hero-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #4a453e);
+}
+
+.inh-hero-rule::after {
+  background: linear-gradient(to left, transparent, #4a453e);
+}
+
+.inh-hero-epigraph {
+  margin: 26px auto 0;
+  max-width: 30rem;
+  font-size: 19px;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--inh-ash);
+  text-wrap: pretty;
+}
+
+.inh-hero-epigraph + .inh-hero-epigraph {
+  margin-top: 8px;
+  color: var(--inh-quiet);
+}
+
+/* Entry-point cards */
+.inh-home-cards {
+  width: 100%;
+  max-width: var(--inh-measure);
+  margin: 0 auto;
+  padding: 0 40px 120px;
+  box-sizing: border-box;
+}
+
+.inh-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.inh-card {
+  display: block;
+  padding: 18px;
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line);
+  border-left: 2px solid var(--inh-blood);
+  border-radius: 2px;
+  text-decoration: none !important;
+}
+
+.inh-cards > .inh-card:nth-child(2) { border-left-color: var(--inh-bronze); }
+.inh-cards > .inh-card:nth-child(3) { border-left-color: var(--inh-gold); }
+
+.inh-card:hover {
+  background: var(--inh-bg-hover);
+  border-color: var(--inh-line-hard);
+  border-left-color: var(--inh-blood-lit);
+}
+
+.inh-cards > .inh-card:nth-child(2):hover { border-left-color: var(--inh-bronze-lit); }
+.inh-cards > .inh-card:nth-child(3):hover { border-left-color: var(--inh-gold-lit); }
+
+.inh-card-label {
+  font-family: var(--inh-caps);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--inh-quiet);
+}
+
+.inh-card-title {
+  margin-top: 7px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--inh-text-warm);
+}
+
+.inh-card-desc {
+  margin-top: 5px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--inh-muted);
+}
+
+
+/* --- Sidebar --------------------------------------------------------------
+   Real markup, from public/index.html:
+     h2.page-title > a
+     .flex-component > [.search > button.search-button > svg + p] [button.readermode]
+     .explorer.nav-files-container
+       > button.title-button > h2 "Explorer"
+       > .explorer-content > ul.explorer-ul > li
+           file:   > a.nav-file-title
+           folder: > .folder-container > svg.folder-icon + div > button.folder-button > span.folder-title
+                   > .folder-outer > ul.content > li ...
+     .inh-links   (InheritorLinks component) */
+
+.page-title {
+  margin: 0;
+  padding: 0 22px;
+  font-family: var(--inh-display);
+  font-size: 23px;
+  font-weight: 400;
+  letter-spacing: 0.09em;
+  line-height: 1;
+  color: #c9c1b4;
+}
+
+.page-title a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+}
+
+.page-title::after {
+  content: 'Playtest · Iron and Blood';
+  display: block;
+  margin-top: 6px;
+  font-family: var(--inh-serif);
+  font-size: 12px;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  color: var(--inh-faint);
+}
+
+/* Toolbar row: search + reader mode */
+.sidebar.left > .flex-component {
+  margin: 20px 22px 0;
+}
+
+.search {
+  max-width: none;
+}
+
+.search > .search-button {
+  width: 100%;
+  height: auto;
+  padding: 7px 10px;
+  gap: 8px;
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line);
+  border-radius: 3px;
+  font-family: var(--inh-serif);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--inh-faint);
+  justify-content: flex-start;
+}
+
+.search > .search-button svg {
+  width: 12px;
+  min-width: 12px;
+  margin: 0;
+}
+
+.search > .search-button svg .search-path {
+  stroke: var(--inh-faint);
+}
+
+.search > .search-button > p {
+  color: var(--inh-faint);
+}
+
+/* "/" key hint, like the design */
+.search > .search-button::after {
+  content: '/';
+  margin-left: auto;
+  font-family: var(--inh-mono);
+  font-size: 10px;
+  font-style: normal;
+  padding: 1px 5px;
+  border: 1px solid var(--inh-line-drw);
+  border-radius: 2px;
+  color: var(--inh-fainter);
+}
+
+button.readermode {
+  color: var(--inh-faint);
+}
+
+button.readermode:hover {
+  color: var(--inh-text-dim);
+}
+
+/* Search overlay */
+.search > .search-container > .search-space > input,
+.search > .search-container > .search-space > .search-layout {
+  background: var(--inh-bg-raised);
+  border-color: var(--inh-line-hard);
+  color: var(--inh-text);
+  font-family: var(--inh-serif);
+}
+
+/* Explorer */
+.explorer,
+.explorer.nav-files-container {
+  margin-top: 22px;
+  font-family: var(--inh-serif);
+  overflow: visible;
+}
+
+.explorer > button.desktop-explorer,
+.explorer > button.title-button {
+  display: none;
+}
+
+.explorer-content {
+  margin-top: 0;
+}
+
+.explorer-content ul,
+.explorer-content ul.explorer-ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Top-level items */
+.explorer-content > ul.explorer-ul > li {
+  margin-bottom: 22px;
+}
+
+/* Folder group header */
+.folder-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 22px 7px;
+}
+
+.folder-container > div {
+  display: contents;
+}
+
+.folder-container div > button.folder-button {
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  order: 0;
+}
+
+.folder-container div > button span,
+.folder-container span.folder-title {
+  font-family: var(--inh-caps);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--inh-muted);
+}
+
+/* Hairline after the label, then the chevron at the far right */
+.folder-container::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  order: 1;
+  background: linear-gradient(to right, var(--inh-line), transparent);
+}
+
+.folder-container > svg.folder-icon {
+  order: 2;
+  width: 10px;
+  height: 10px;
+  margin: 0;
+  color: var(--inh-fainter);
+}
+
+.folder-container > svg.folder-icon:hover {
+  color: var(--inh-muted);
+}
+
+/* Group tints, cycled by position */
+.explorer-content > ul.explorer-ul > li:nth-child(6n+1) .folder-container div > button span { color: var(--inh-blood); }
+.explorer-content > ul.explorer-ul > li:nth-child(6n+2) .folder-container div > button span { color: var(--inh-bronze); }
+.explorer-content > ul.explorer-ul > li:nth-child(6n+3) .folder-container div > button span { color: var(--inh-gold); }
+.explorer-content > ul.explorer-ul > li:nth-child(6n+4) .folder-container div > button span { color: var(--inh-copper); }
+.explorer-content > ul.explorer-ul > li:nth-child(6n+5) .folder-container div > button span { color: var(--inh-violet); }
+.explorer-content > ul.explorer-ul > li:nth-child(6n+6) .folder-container div > button span { color: var(--inh-ash); }
+
+/* Folder contents: no indent rail at top level */
+.explorer-content .folder-outer > ul {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: none;
+}
+
+/* Files */
+.explorer-content ul li > a.nav-file-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 22px 5px 20px;
+  border-left: 2px solid transparent;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--inh-muted);
+  opacity: 1;
+  text-decoration: none;
+  background: none;
+  transition: none;
+}
+
+.explorer-content ul li > a.nav-file-title:hover {
+  color: var(--inh-text);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.explorer-content ul li > a.nav-file-title.active {
+  color: var(--inh-bone);
+  font-weight: 700;
+  border-left-color: var(--inh-blood);
+  background: linear-gradient(to right, rgba(166, 93, 93, 0.16), transparent 70%);
+  opacity: 1;
+}
+
+/* Nested folders (one level in) read as quiet sub-heads */
+.folder-outer .folder-container {
+  padding: 4px 22px 4px 20px;
+  margin-top: 6px;
+}
+
+.folder-outer .folder-container div > button span {
+  font-family: var(--inh-serif);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--inh-text-dim);
+}
+
+.folder-outer .folder-container::after {
+  display: none;
+}
+
+.folder-outer .folder-outer > ul {
+  margin-left: 26px;
+  border-left: 1px solid var(--inh-line-soft);
+}
+
+.folder-outer .folder-outer > ul li > a.nav-file-title {
+  padding-left: 14px;
+}
+
+/* Sidebar links + Ko-fi (InheritorLinks component) */
+.inh-links {
+  margin: 0 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--inh-line-nav);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.inh-links a {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--inh-muted);
+  text-decoration: none;
+}
+
+.inh-links a:hover {
+  color: var(--inh-bone);
+}
+
+.inh-links a .inh-arrow {
+  font-size: 10px;
+  color: var(--inh-fainter);
+}
+
+.inh-links a.inh-kofi {
+  margin-top: 12px;
+  display: block;
+  padding: 8px 12px;
+  text-align: center;
+  font-family: var(--inh-caps);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e3d9c8;
+  background: linear-gradient(to right, #6e2f2f, #7d4b45);
+  border: 1px solid #8a4a4a;
+  border-radius: 2px;
+}
+
+.inh-links a.inh-kofi:hover {
+  color: var(--inh-bone);
+  border-color: #a85c5c;
+}
+
+
+/* --- Right column ---------------------------------------------------------
+   Real markup:
+     .graph > h3 + .graph-outer
+     .toc > button.toc-header > h3 ; ul.toc-content.overflow > li.depth-N > a[.in-view]
+     .backlinks > h3 + ul.overflow > li > a.internal */
+
+.page > #quartz-body .sidebar.right > * {
+  flex: 0 0 auto;
+  max-height: none;
+}
+
+.sidebar.right h3,
+.sidebar.right button.toc-header h3 {
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--inh-line-nav);
+  font-family: var(--inh-caps);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--inh-quiet);
+}
+
+.sidebar.right button.toc-header {
+  width: 100%;
+  display: block;
+}
+
+.sidebar.right button.toc-header .fold {
+  display: none;
+}
+
+/* TOC, in the design's order: above the graph */
+.sidebar.right .toc {
+  order: -1;
+  display: flex;
+}
+
+.page > #quartz-body .sidebar.right > .toc {
+  display: flex;
+}
+
+ul.toc-content.overflow {
+  margin: 8px 0 0;
+  max-height: none;
+}
+
+ul.toc-content.overflow > li > a {
+  display: block;
+  padding: 6px 0 6px 10px;
+  border-left: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--inh-faint);
+  opacity: 1;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+ul.toc-content.overflow > li > a:hover {
+  color: var(--inh-text-dim);
+}
+
+ul.toc-content.overflow > li > a.in-view {
+  color: var(--inh-text-warm);
+  border-left-color: var(--inh-blood);
+  opacity: 1;
+}
+
+ul.toc-content.overflow .depth-1 > a { padding-left: 22px; }
+ul.toc-content.overflow .depth-2 > a { padding-left: 34px; }
+
+/* Backlinks */
+.backlinks ul.overflow {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.backlinks ul.overflow > li > a {
+  display: block;
+  padding: 5px 0 5px 10px;
+  border-left: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--inh-faint);
+  text-decoration: none;
+  background: none;
+}
+
+.backlinks ul.overflow > li > a:hover {
+  color: var(--inh-text-dim);
+}
+
+/* Graph: quieten it */
+.graph {
+  order: 1;
+}
+
+.graph > .graph-outer {
+  margin-top: 8px;
+  border: 1px solid var(--inh-line-nav);
+  border-radius: 2px;
+  background: var(--inh-bg-sunken);
+}
+
+.graph .global-graph-icon {
+  color: var(--inh-blood);
+}
+
+.backlinks {
+  order: 2;
+}
+
+
+/* --- Popovers + footer ---------------------------------------------------- */
+
+.popover > .popover-inner {
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-blood);
+  border-radius: 2px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.6);
+  padding: 1rem 1.2rem;
+}
+
+footer {
+  border-top: 1px solid var(--inh-line-nav);
+  padding-top: 20px;
+  color: var(--inh-faint);
+  font-size: 14px;
+}
+
+footer ul {
+  display: flex;
+  gap: 16px;
+  list-style: none;
+  padding: 0;
+}
+
+
+/* --- Dice drawer ---------------------------------------------------------- */
+
+.inh-dice-handle {
+  position: fixed;
+  z-index: 41;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 7px;
+  cursor: pointer;
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line-drw);
+  border-right: none;
+  border-radius: 3px 0 0 3px;
+  transition: right 0.34s cubic-bezier(0.16, 0.84, 0.28, 1);
+}
+
+.inh-dice-handle:hover {
+  background: var(--inh-bg-input);
+  border-color: var(--inh-line-hard);
+}
+
+.inh-dice-handle-label {
+  font-family: var(--inh-caps);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  color: var(--inh-text-warm);
+}
+
+.inh-dice-handle-key {
+  font-family: var(--inh-mono);
+  font-size: 10px;
+  color: var(--inh-muted);
+}
+
+body.inh-dice-open .inh-dice-handle {
+  right: 360px;
+}
+
+.inh-dice-drawer {
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 360px;
+  max-width: 88vw;
+  display: flex;
+  flex-direction: column;
+  background: var(--inh-bg-sunken);
+  border-left: 1px solid var(--inh-line-drw);
+  box-shadow: -18px 0 48px rgba(0, 0, 0, 0.6);
+  transform: translateX(100%);
+  transition: transform 0.34s cubic-bezier(0.16, 0.84, 0.28, 1);
+}
+
+body.inh-dice-open .inh-dice-drawer {
+  transform: none;
+}
+
+.inh-dice-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--inh-line-nav);
+}
+
+.inh-dice-head-title {
+  font-family: var(--inh-caps);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--inh-text-warm);
+}
+
+.inh-dice-close {
+  margin-left: auto;
+  padding: 2px 8px;
+  font-family: var(--inh-serif);
+  font-size: 15px;
+  color: var(--inh-muted);
+  background: transparent;
+  border: 1px solid var(--inh-line-drw);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.inh-dice-close:hover {
+  color: var(--inh-bone);
+  border-color: #4d4740;
+}
+
+.inh-dice-tests {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--inh-line-nav);
+}
+
+.inh-dice-legend {
+  font-family: var(--inh-caps);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--inh-quiet);
+}
+
+.inh-dice-presets {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.inh-dice-preset {
+  padding: 9px 0;
+  font-family: var(--inh-mono);
+  font-size: 13px;
+  color: var(--inh-text);
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line-drw);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.inh-dice-preset:nth-child(1):hover { border-color: var(--inh-verdigris); color: var(--inh-bone); }
+.inh-dice-preset:nth-child(2):hover { border-color: var(--inh-bronze); color: var(--inh-bone); }
+.inh-dice-preset:nth-child(3):hover { border-color: var(--inh-blood); color: var(--inh-bone); }
+
+.inh-dice-target-row {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inh-dice-target-label {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--inh-quiet);
+}
+
+.inh-dice-target {
+  width: 3.5rem;
+  padding: 5px 8px;
+  font-family: var(--inh-mono);
+  font-size: 13px;
+  text-align: center;
+  color: var(--inh-bone);
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line-drw);
+  border-radius: 2px;
+  outline: none;
+}
+
+.inh-dice-modes {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.inh-dice-mode {
+  padding: 3px 8px;
+  font-family: var(--inh-mono);
+  font-size: 12px;
+  color: var(--inh-quiet);
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line-drw);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.inh-dice-mode[aria-pressed='true'] { color: var(--inh-bone); }
+.inh-dice-mode[data-mode='adv'][aria-pressed='true'] { border-color: var(--inh-verdigris); }
+.inh-dice-mode[data-mode='dis'][aria-pressed='true'] { border-color: var(--inh-blood); }
+
+.inh-dice-log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 14px 18px;
+}
+
+.inh-dice-empty {
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--inh-ghost);
+}
+
+.inh-dice-empty code {
+  font-family: var(--inh-mono);
+  font-size: 12px;
+  color: var(--inh-muted);
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.inh-dice-entry {
+  padding: 10px 0;
+  border-bottom: 1px solid #1e1c19;
+  opacity: 0.62;
+}
+
+.inh-dice-entry:last-child { opacity: 1; }
+
+.inh-dice-entry-top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.inh-dice-cmd {
+  font-family: var(--inh-mono);
+  font-size: 11px;
+  color: var(--inh-ghost);
+}
+
+.inh-dice-verdict {
+  margin-left: auto;
+  font-family: var(--inh-caps);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.inh-dice-entry[data-verdict='success'] .inh-dice-verdict { color: #7a9e6f; }
+.inh-dice-entry[data-verdict='failure'] .inh-dice-verdict { color: var(--inh-blood-lit); }
+.inh-dice-entry[data-verdict='cost']    .inh-dice-verdict { color: var(--inh-bronze); }
+
+.inh-dice-entry-body {
+  margin-top: 3px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.inh-dice-breakdown {
+  font-family: var(--inh-mono);
+  font-size: 12px;
+  color: var(--inh-muted);
+}
+
+.inh-dice-total {
+  font-family: var(--inh-mono);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--inh-bone);
+}
+
+.inh-dice-entry[data-verdict='success'] .inh-dice-total { color: #8fb583; }
+.inh-dice-entry[data-verdict='failure'] .inh-dice-total { color: var(--inh-blood-lit); }
+
+.inh-dice-foot {
+  padding: 14px 18px;
+  border-top: 1px solid var(--inh-line-nav);
+}
+
+.inh-dice-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: var(--inh-mono);
+  font-size: 14px;
+  color: var(--inh-bone);
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line-drw);
+  border-radius: 2px;
+  outline: none;
+}
+
+.inh-dice-input:focus { border-color: #4d4740; }
+
+.inh-dice-hint {
+  margin-top: 8px;
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--inh-ghost);
+}
+
+.inh-dice-hint span:last-child { margin-left: auto; }
+
+@keyframes inh-dice-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 242, 222, 0.6); }
+  60%  { box-shadow: 0 0 0 14px rgba(166, 93, 93, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(166, 93, 93, 0); }
+}
+
+.inh-dice-handle.inh-attention {
+  animation: inh-dice-pulse 1.6s ease-out 4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inh-dice-handle,
+  .inh-dice-drawer { transition: none; }
+  .inh-dice-handle.inh-attention { animation: none; }
+}
+
+
+/* --- Mobile ---------------------------------------------------------------
+   Quartz's base already collapses the grid below 800px and turns the explorer
+   into a slide-out; these only restyle inside that. */
+
+@media screen and (max-width: 800px) {
+  .page > #quartz-body {
+    grid-template-columns: 1fr;
+  }
+
+  .page > #quartz-body .sidebar,
+  .page > #quartz-body .sidebar.left,
+  .page > #quartz-body .sidebar.left:has(.explorer) {
+    height: auto;
+    padding: 16px 20px;
+    border-right: none;
+    border-bottom: 1px solid var(--inh-line-nav);
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .page-title::after { display: none; }
+  .sidebar.left > .flex-component { margin: 0; flex: 1; }
+  .explorer { margin-top: 0; }
+  .explorer .explorer-content { background: var(--inh-bg-nav); padding: 60px 0 40px; }
+  .inh-links { display: none; }
+
+  .page > #quartz-body .sidebar.right { display: none; }
+
+  .center > .page-header { padding: 32px 20px 0; }
+  .center article { padding: 0 20px 100px; }
+  .inh-home-cards { padding: 0 20px 100px; }
+  body[data-slug='index'] .page > #quartz-body { grid-template-columns: 1fr; }
+
+  .markdown-rendered p,
+  .markdown-rendered ul,
+  .markdown-rendered ol { font-size: 19px; }
+
+  .page-header h1.article-title { font-size: 34px; }
+  .markdown-rendered h2 { font-size: 25px; }
+
+  .inh-hero { padding: 56px 24px 40px; }
+  .inh-tiers { grid-template-columns: 1fr; }
+
+  .markdown-rendered table { font-size: 15px; }
+  .markdown-rendered th,
+  .markdown-rendered td { padding: 7px 10px; }
+
+  .markdown-rendered th:first-child,
+  .markdown-rendered td:first-child {
+    position: sticky;
+    left: 0;
+    background: var(--inh-bg);
+    box-shadow: 1px 0 0 var(--inh-line-soft);
+  }
+
+  .markdown-rendered thead th:first-child { background: var(--inh-bg-raised); }
+
+  .inh-dice-drawer { width: 100%; max-width: 100%; }
+  body.inh-dice-open .inh-dice-handle { right: 100%; }
+  .inh-dice-handle { top: auto; bottom: 92px; transform: none; }
+}
+
+
+/* =============================================================================
+   CALLOUT SHORTHANDS
+   Plain Obsidian callouts that CSS turns into the design's components, so
+   nothing needs pasting. They render as ordinary callouts in Obsidian and as
+   cards / pills / chips / stat grids here. See CHEATSHEET.md for the syntax.
+
+     > [!attrs]      list  →  attribute cards      **Name** `ABBR` description
+     > [!tiers]      list  →  difficulty pills     **Label** value
+     > [!legend]     list  →  legend chips         **E** text
+     > [!features]   list  →  feature list         **Name** `type` text
+     > [!statblock]  table →  stat grid            | HD | DR | ... |
+   ============================================================================= */
+
+/* Shared: strip the callout chrome from shorthand types */
+.markdown-rendered .callout[data-callout='attrs'],
+.markdown-rendered .callout[data-callout='tiers'],
+.markdown-rendered .callout[data-callout='legend'],
+.markdown-rendered .callout[data-callout='features'] {
+  display: block;
+  padding: 0;
+  background: none;
+  border: none;
+  overflow: visible;
+}
+
+.markdown-rendered .callout[data-callout='attrs'] .callout-title,
+.markdown-rendered .callout[data-callout='tiers'] .callout-title,
+.markdown-rendered .callout[data-callout='legend'] .callout-title,
+.markdown-rendered .callout[data-callout='features'] .callout-title {
+  display: none;
+}
+
+.markdown-rendered .callout[data-callout='attrs'] .callout-content,
+.markdown-rendered .callout[data-callout='tiers'] .callout-content,
+.markdown-rendered .callout[data-callout='legend'] .callout-content,
+.markdown-rendered .callout[data-callout='features'] .callout-content {
+  margin: 0;
+}
+
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul,
+.markdown-rendered .callout[data-callout='tiers'] .callout-content > ul,
+.markdown-rendered .callout[data-callout='legend'] .callout-content > ul,
+.markdown-rendered .callout[data-callout='features'] .callout-content > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li,
+.markdown-rendered .callout[data-callout='tiers'] .callout-content > ul > li,
+.markdown-rendered .callout[data-callout='legend'] .callout-content > ul > li,
+.markdown-rendered .callout[data-callout='features'] .callout-content > ul > li {
+  margin: 0;
+}
+
+/* --- [!attrs] → attribute cards ------------------------------------------- */
+
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li {
+  position: relative;
+  display: block;
+  padding: 16px;
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line);
+  border-top: 2px solid var(--inh-violet);
+  border-radius: 2px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--inh-muted);
+}
+
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li > ul > li {
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--inh-muted);
+  padding-top: .75em;
+}
+
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li > ul > li:nth-child(n+2) {
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--inh-muted);
+  padding-top: 0;
+}
+
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li > strong {
+  display: block;
+  margin-bottom: 6px;
+  padding-right: 52px;
+  font-family: var(--inh-caps);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--inh-text-warm);
+}
+
+.markdown-rendered .callout[data-callout='attrs'] .callout-content > ul > li > code {
+  position: absolute;
+  top: 17px;
+  right: 16px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--inh-mono);
+  font-size: 11px;
+  color: var(--inh-quiet);
+}
+
+/* --- [!tiers] → difficulty pills ------------------------------------------ */
+
+.markdown-rendered .callout[data-callout='tiers'] .callout-content > ul {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.markdown-rendered .callout[data-callout='tiers'] .callout-content > ul > li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line);
+  border-radius: 2px;
+  font-family: var(--inh-mono);
+  font-size: 24px;
+  color: var(--inh-text-bright);
+}
+
+.markdown-rendered .callout[data-callout='tiers'] .callout-content > ul > li > strong {
+  font-family: var(--inh-caps);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--inh-verdigris);
+}
+
+.markdown-rendered .callout[data-callout='tiers'] .callout-content > ul > li:nth-child(2) > strong { color: var(--inh-bronze); }
+.markdown-rendered .callout[data-callout='tiers'] .callout-content > ul > li:nth-child(3) > strong { color: var(--inh-blood); }
+
+/* --- [!legend] → cards (attrs layout, no colour coding) ------------------- */
+
+.markdown-rendered .callout[data-callout='legend'] .callout-content > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.markdown-rendered .callout[data-callout='legend'] .callout-content > ul > li {
+  position: relative;
+  display: block;
+  padding: 16px;
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line);
+  border-top: 2px solid var(--inh-line-hard);
+  border-radius: 2px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--inh-muted);
+}
+
+.markdown-rendered .callout[data-callout='legend'] .callout-content > ul > li > strong {
+  display: block;
+  margin-bottom: 6px;
+  padding-right: 52px;
+  font-family: var(--inh-caps);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--inh-text-warm);
+}
+
+.markdown-rendered .callout[data-callout='legend'] .callout-content > ul > li > code {
+  position: absolute;
+  top: 17px;
+  right: 16px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--inh-mono);
+  font-size: 11px;
+  color: var(--inh-quiet);
+}
+
+/* --- [!features] → feature list ------------------------------------------- */
+
+.markdown-rendered .callout[data-callout='features'] .callout-content > ul {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--inh-line);
+  border: 1px solid var(--inh-line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.markdown-rendered .callout[data-callout='features'] .callout-content > ul > li {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  column-gap: 16px;
+  padding: 12px 14px;
+  background: var(--inh-bg-block);
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--inh-text-dim);
+}
+
+.markdown-rendered .callout[data-callout='features'] .callout-content > ul > li > strong {
+  grid-column: 1;
+  grid-row: 1;
+  font-weight: 700;
+  color: var(--inh-bone);
+}
+
+.markdown-rendered .callout[data-callout='features'] .callout-content > ul > li > code {
+  grid-column: 1;
+  grid-row: 2;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--inh-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--inh-quiet);
+}
+
+/* description text auto-places into column 2 and spans both rows */
+.markdown-rendered .callout[data-callout='features'] .callout-content > ul > li {
+  grid-template-rows: auto auto;
+  grid-auto-flow: column;
+}
+
+@media screen and (max-width: 700px) {
+  .markdown-rendered .callout[data-callout='features'] .callout-content > ul > li {
+    grid-template-columns: 1fr;
+    grid-auto-flow: row;
+  }
+  .markdown-rendered .callout[data-callout='features'] .callout-content > ul > li > code {
+    margin-bottom: 6px;
+  }
+}
+
+/* --- [!statblock] table → stat grid --------------------------------------- */
+
+.inh-statblock-abbr {
+  font-family: var(--inh-mono);
+  font-size: 11px;
+  color: var(--inh-quiet);
+}
+
+.markdown-rendered .callout[data-callout='statblock'] .table-container {
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.markdown-rendered .callout[data-callout='statblock'] table {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 12px;
+  border: none;
+}
+
+.markdown-rendered .callout[data-callout='statblock'] thead,
+.markdown-rendered .callout[data-callout='statblock'] tbody,
+.markdown-rendered .callout[data-callout='statblock'] tr {
+  display: contents;
+}
+
+.markdown-rendered .callout[data-callout='statblock'] th {
+  grid-row: 1;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--inh-caps);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--inh-quiet);
+}
+
+.markdown-rendered .callout[data-callout='statblock'] td {
+  grid-row: 2;
+  padding: 0;
+  border: none;
+  font-family: var(--inh-text);
+  font-size: 17px;
+  color: var(--inh-text-bright);
+  white-space: nowrap;
+}
+
+.markdown-rendered .callout[data-callout='statblock'] tbody tr:hover {
+  background: none;
+}
+
+/* Italic first line under the name = subtitle */
+.markdown-rendered .callout[data-callout='statblock'] .callout-content > p:first-child > em:only-child {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 15px;
+  color: var(--inh-quiet);
+}
+
+/* --- [!statblock] title tag ----------------------------------------------
+   Upper-right corner tag, same treatment as `PHY` on attribute cards.
+   Either form works:
+     > [!statblock] Blackhand Reaver `Undead`
+     > [!statblock] Blackhand Reaver <span class="inh-statblock-abbr">Undead</span> */
+
+.markdown-rendered .callout[data-callout='statblock'] {
+  position: relative;
+}
+
+.markdown-rendered .callout[data-callout='statblock'] .callout-title {
+  padding-right: 96px;
+}
+
+.markdown-rendered .callout[data-callout='statblock'] .callout-title code,
+.markdown-rendered .callout[data-callout='statblock'] .inh-statblock-abbr {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  padding: 2px 7px;
+  font-family: var(--inh-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--inh-quiet);
+  background: var(--inh-bg-raised);
+  border: 1px solid var(--inh-line-btn);
+  border-radius: 2px;
+}
+
+/* --- Roll on this table ---------------------------------------------------
+   Button appears under any table whose first-column header is a die
+   expression (`1d10`, `2d6`, `d20`). Injected by the dice script. */
+
+.inh-roll-bar {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.inh-roll-button {
+  padding: 6px 12px;
+  font-family: var(--inh-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--inh-text-dim);
+  background: var(--inh-bg-input);
+  border: 1px solid var(--inh-line-btn);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.inh-roll-button:hover {
+  border-color: var(--inh-blood);
+  color: var(--inh-bone);
+}
+
+.inh-roll-note {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--inh-faint);
+}
+
+/* Hit row. The :hover duplicate is deliberate — it has to beat
+   `.markdown-rendered tbody tr:hover`, which would otherwise wash it out
+   the moment the pointer lands on the row it just highlighted. */
+.markdown-rendered tbody tr.inh-roll-hit,
+.markdown-rendered tbody tr.inh-roll-hit:hover {
+  background: linear-gradient(to right, rgba(166, 93, 93, 0.18), rgba(166, 93, 93, 0.05));
+  box-shadow: inset 2px 0 0 var(--inh-blood);
+}
+
+.markdown-rendered tbody tr.inh-roll-hit td {
+  color: var(--inh-bone);
+}
+
+.markdown-rendered tbody tr.inh-roll-hit td:first-child {
+  color: var(--inh-bronze-lit);
+}
+
+/* [+] and [-] anywhere in prose, coloured by the dice script. */
+.inh-plus,
+.inh-minus {
+  font-family: var(--inh-mono);
+  font-size: 0.85em;
+  font-weight: 700;
+}
+
+.inh-plus  { color: var(--inh-verdigris); }
+.inh-minus { color: var(--inh-blood); }
+.inh-term-inheritor { color: var(--inh-verdigris); font-family: var(--inh-caps); }
+.inh-term-warden    { color: var(--inh-violet); font-family: var(--inh-caps); }

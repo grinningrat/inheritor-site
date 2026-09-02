@@ -5,7 +5,7 @@ tags:
   - plugin/pageType
 image:
 repository: "[quartz-community/folder-page](https://github.com/quartz-community/folder-page)"
-enabled: true
+enabled: false
 required: false
 ---
 
